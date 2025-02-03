@@ -36,4 +36,12 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\marti\source\repos\CodeReviews.Console.Phonebook\PhoneGallery.DreamFXX\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\marti\source\repos\CodeReviews.Console.Phonebook\PhoneGallery.DreamFXX\.editorconfig" />
+  </ItemGroup>
+
 </Project>

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PhoneGallery.DreamFXX.Data;
 
@@ -10,9 +11,11 @@ using PhoneGallery.DreamFXX.Data;
 namespace PhoneGallery.DreamFXX.Migrations
 {
     [DbContext(typeof(PhoneGalleryContext))]
-    partial class PhoneGalleryContextModelSnapshot : ModelSnapshot
+    [Migration("20250203221120_SecondMgrInit")]
+    partial class SecondMgrInit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +39,7 @@ namespace PhoneGallery.DreamFXX.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -84,7 +87,7 @@ namespace PhoneGallery.DreamFXX.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Contacts", (string)null);
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("PhoneGallery.DreamFXX.Models.Contact", b =>

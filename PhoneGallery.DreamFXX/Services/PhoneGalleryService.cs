@@ -11,7 +11,16 @@ public class PhoneGalleryService
 
     public PhoneGalleryService(PhoneGalleryContext context)
     {
-        _context = context;
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        try
+        {
+            _context.Database.EnsureCreated();
+        }
+        catch (Exception dbEx)
+        {
+            AnsiConsole.MarkupLine($"[red]Database initialization error: {dbEx.Message}[/]");
+            throw;
+        }
     }
 
     public void Start()
@@ -33,7 +42,7 @@ public class PhoneGalleryService
             var userSelection = AnsiConsole.Prompt(
                 new SelectionPrompt<MenuSelection>()
                 .Title(
-                "[yellow]Welcome in your personal phonebook[/]\n[grey]info: choose, what you want to do.[/]")
+                "[yellow]Welcome in your personal phonebook[/]\n[grey]-Select an option-[/]")
                 .PageSize(6)
                 .AddChoices(menuSelections)
                 .UseConverter(n => n.Name));
@@ -74,26 +83,41 @@ public class PhoneGalleryService
         {
             _context.Contacts.Add(contact);
             _context.SaveChanges();
-
-            Console.WriteLine("Contact was saved successfully.");
+            AnsiConsole.MarkupLine("[green]Contact was saved successfully.[/]");
+            AnsiConsole.WriteLine("Press any key to continue...");
+            Console.ReadKey();
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            AnsiConsole.MarkupLine($"[red]Failed to save the contact: {ex.Message}[/]");
+            AnsiConsole.WriteLine("Press any key to continue...");
+            Console.ReadKey();
             throw;
         }
     }
 
     public List<Contact>? GetContacts()
     {
-        List<Contact> contacts = new();
-        _context.Contacts.ToList();
-        if (contacts.Count == 0)
+        try
         {
-            Console.WriteLine("No saved contacts found. Press any key to go back.");
-            Console.ReadKey();
-            return null;
+            var contacts = _context.Contacts.ToList();
+            if (!contacts.Any())
+            {
+                AnsiConsole.MarkupLine("[yellow]No saved contacts found.[/]");
+                AnsiConsole.WriteLine("Press any key to go back.");
+                Console.ReadKey();
+                return null;
+            }
+            return contacts;
         }
-        return contacts;
+        catch (Exception ex)
+        {
+            AnsiConsole.MarkupLine($"[red]Database error: {ex.Message}[/]");
+            AnsiConsole.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+            return new List<Contact>();
+        }
+
     }
 
     private List<Category> GetCategories()
@@ -103,15 +127,25 @@ public class PhoneGalleryService
 
     public void ShowContacts()
     {
-        var contacts = GetContacts();
-        if (contacts == null) return;
+        var contacts = _context.Contacts.ToList();
+        if (!contacts.Any())
+        {
+            AnsiConsole.MarkupLine("[yellow]No contacts found in the database.[/]");
+            AnsiConsole.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+            return;
+        }
+
         foreach (var contact in contacts)
         {
-            Console.WriteLine($"Name - {contact.Name}");
-            Console.WriteLine($"Phone Number - {contact.PhoneNumber}");
-            Console.WriteLine($"Email - {contact.Email}");
-            Console.WriteLine($"Category - {contact.Category.Name}\n");
+            AnsiConsole.MarkupLine($"[green]Name[/] - {contact.Name}");
+            AnsiConsole.MarkupLine($"[green]Phone Number[/] - {contact.PhoneNumber}");
+            AnsiConsole.MarkupLine($"[green]Email[/] - {contact.Email}");
+            AnsiConsole.MarkupLine($"[green]Category[/] - {contact.Category?.Name ?? "Uncategorized"}");
         }
+
+        AnsiConsole.WriteLine("Press any key to continue...");
+        Console.ReadKey();
     }
 
     public void ShowCategories()
@@ -130,11 +164,11 @@ public class PhoneGalleryService
     public void UpdateContact()
     {
         Contact contact = ContactInput.GetSpecificContact(GetContacts());
-        if (contact == null) 
+        if (contact == null)
             return;
 
         contact.PhoneNumber = ContactInput.GetPhoneNumberInput();
-        if (contact.PhoneNumber == null) 
+        if (contact.PhoneNumber == null)
             return;
 
         contact.Email = ContactInput.GetEmailInput();
@@ -142,7 +176,7 @@ public class PhoneGalleryService
             return;
 
         contact.CategoryId = ContactInput.GetCategorySelection(GetCategories());
-        
+
         if (!ContactInput.ConfirmAction())
         {
             Console.WriteLine("Changes were cancelled.");
@@ -156,7 +190,7 @@ public class PhoneGalleryService
     public void DeleteContact()
     {
         Contact contact = ContactInput.GetSpecificContact(GetContacts());
-        if (contact == null) 
+        if (contact == null)
             return;
 
         if (!ContactInput.ConfirmAction())
