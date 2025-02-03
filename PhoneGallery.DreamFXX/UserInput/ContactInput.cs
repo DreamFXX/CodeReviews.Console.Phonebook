@@ -9,27 +9,28 @@ public class ContactInput
 {
     public static string? GetValidatedInput(string askUser, Func<string, bool> validator)
     {
+        ArgumentNullException.ThrowIfNull(askUser);
+        ArgumentNullException.ThrowIfNull(validator);
+
         while (true)
         {
-            var input = AnsiConsole.Ask<string>($"[yellow]{askUser} or enter e, to exit[/]");
+            var input = AnsiConsole.Ask<string>($"[yellow]{askUser.Trim()} or enter e to exit[/]").Trim();
             if (input.Equals("e", StringComparison.OrdinalIgnoreCase))
                 return null;
 
             if (validator(input))
-            {
                 return input;
-            }
-            else
-            {
-                AnsiConsole.MarkupLine("[red]Invalid input. Please try again.[/]");
-            }
+           
+            AnsiConsole.MarkupLine("[red]Invalid input. Please try again.[/]");
+            
         }
     }
 
     public static string GetNameInput()
     {
         TextInfo textInfo = CultureInfo.CurrentCulture.TextInfo;
-        return textInfo.ToTitleCase(GetValidatedInput("Enter name of the contact:", InputValidation.IsNameValid));
+        var name = GetValidatedInput("Enter name of the contact: ", InputValidation.IsNameValid);
+        return name != null ? textInfo.ToTitleCase(name) : throw new InvalidOperationException("Name cannot be null");
     }
 
     public static string GetEmailInput()
@@ -44,13 +45,17 @@ public class ContactInput
 
     public static int GetCategorySelection(List<Category> categories)
     {
+        ArgumentNullException.ThrowIfNull(categories);
+        if (!categories.Any())
+            throw new ArgumentException("Categories list cannot be empty.", nameof(categories));
+        
         var categorySelected = AnsiConsole.Prompt(
             new SelectionPrompt<Category>()
             .Title("Add contact to category:")
             .PageSize(4)
             .MoreChoicesText("[grey](Move cursor up and down to reveal more categories)[/]")
             .AddChoices(categories)
-            .UseConverter(c => c.Name)
+            .UseConverter(c => c?.Name ?? "Unnamed Category")
             );
 
         return categorySelected.Id;
@@ -58,14 +63,16 @@ public class ContactInput
 
     public static Contact? GetSpecificContact(List<Contact> contacts)
     {
-        if (contacts == null)
+        ArgumentNullException.ThrowIfNull(contacts);
+        if (!contacts.Any())
             return null;
+
         var contactSelected = AnsiConsole.Prompt(
             new SelectionPrompt<Contact>()
-                .Title("[yellow]Select contact you wish to modify:[/]")
+                .Title("[yellow]Select contact you want to modify:[/]")
                 .PageSize(10)
                 .AddChoices(contacts)
-                .UseConverter(c => c.Name)
+                .UseConverter(c => c?.Name ?? "Unnamed Contact")
         );
 
         return contactSelected;
