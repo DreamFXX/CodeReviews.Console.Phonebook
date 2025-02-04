@@ -1,20 +1,12 @@
-﻿# Phonebook app repository
+﻿# Phonebook App by DreamFXX
 
 ## Phonebook Console App
 
-### Steps to properly run this app
+### Important! - Start Configuration
 
-1. In root directory, open appsettings.json file
-2. Add your own connection string to your SQL Server 
-    - In case you dont know your connection string, use "localhost" as your server name
-3. Save the appsettings.json file and run
-
-### Created with
-
-- VS 2022 
-- SQL Server
-- Entity Framework Core 
-- Spectre Console
+1. Before running this app, open the appsettings.json file in the root directory of the project.
+ In case you dont know your connection string, use "localhost" as your server name and "PhoneGallery_Data" as your database name. App was created on .NET **9.0**
+2. Save the appsettings.json file and run the app.
 
 ### Main functions of this app and their implementation
 
@@ -28,15 +20,23 @@
 
 ### Main Steps that are yet to be implemented
 
-  1. Add Category model to existing classes, connect Contacts to Categories with a Foreign Key ✓
+  1. Add Category model to existing classes, connect Contacts to Categories   with a Foreign Key ✓
   2. Start implementing database CRUD operations for Contacts and Categories through Service class ✓
-  3. Create user interface
-  4. Create validation for Phone numbers and Emails
-  5. Handle Exceptions and possible Errors
-  6. Handle possible null values
+  3. Create user interface ✓
+  4. Create validation for Phone numbers and Emails ✓
+  5. Handle Exceptions and possible Bugs ✓
+  6. Handle possible null values ✓
+  7. Windthrough and implement a few try-catch blocks to add to applications stability ✓
 
 #### Additional things i experienced while developing this *simple* app
 
-- This was my first experience with Entity Framework Core and SQL Server together. I was frustrated, i didnt know how to fix all the bugs when i was trying to create an migration.. I was asking myself "What am I doing wrong?" And then i got a solution, and learned a lot. The services and the migrations are a bit confusing, but once you get used to it, it becomes very simple.. Thanks for your practices, It really sheds some light into my life right now. I appreciate all the work you do with the projects and the reviews!
+- This was my first experience with Entity Framework Core and SQL Server together. I was frustrated, i didnt know how to fix all the bugs when I was trying to create the migration.. I was asking myself "What am I doing wrong?" I got a solution, and learned a lot. I appreciate all the work you do with the projects and reviews!</p>
+
+#### Created with
+
+- VS 2022, VSCode
+- SQL Server
+- Entity Framework Core
+- Spectre Console
 
 -DreamFXX
