@@ -1,4 +1,7 @@
-﻿using PhoneGallery.DreamFXX.Data;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using PhoneGallery.DreamFXX.Data;
 using PhoneGallery.DreamFXX.Models;
 using PhoneGallery.DreamFXX.UserInput;
 using Spectre.Console;
@@ -32,6 +35,7 @@ public class PhoneGalleryService
             var menuSelections = new List<MenuSelection>
             {
                 new("Add Contact", AddContact),
+                new("Add Category", AddCategory),
                 new("Show Contact List", ShowContacts),
                 new("Update Contact", UpdateContact),
                 new("Delete Contact", DeleteContact),
@@ -96,7 +100,40 @@ public class PhoneGalleryService
         }
     }
 
-    public List<Contact>? GetContacts()
+    public void AddCategory()
+    {
+        var name = AnsiConsole.Prompt(
+            new TextPrompt<string>("[green]Enter name of the Category -> [/]")
+                  .ValidationErrorMessage("[red]Category name is required[/]")
+                  .Validate(name =>
+                  {
+                      if (string.IsNullOrWhiteSpace(name))
+                          return ValidationResult.Error("[red]Category name cannot be empty[/]");
+                      if (name.Length > 100)
+                          return ValidationResult.Error("[red]Category name must be less than 100 characters[/]");
+                      return ValidationResult.Success();
+                  }));
+
+        try
+        {
+            var category = new Category { Name = name };
+            _context.Categories.Add(category);
+            _context.SaveChanges();
+            AnsiConsole.MarkupLine("[green]Category was saved successfully.[/]");
+        }
+        catch (Exception ex)
+        {
+            AnsiConsole.MarkupLine($"[red]Failed to save category: {ex.Message}[/]");
+        }
+
+        AnsiConsole.WriteLine("Press any key to continue...");
+        Console.ReadKey();
+    }
+
+
+    _context.Categories.Add(
+
+  public List<Contact>? GetContacts()
     {
         try
         {
