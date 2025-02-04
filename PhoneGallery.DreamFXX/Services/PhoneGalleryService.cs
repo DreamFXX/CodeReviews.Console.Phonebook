@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.EntityFrameworkCore;
 using PhoneGallery.DreamFXX.Data;
 using PhoneGallery.DreamFXX.Models;
 using PhoneGallery.DreamFXX.UserInput;
@@ -14,7 +15,8 @@ public class PhoneGalleryService
 
     public PhoneGalleryService(PhoneGalleryContext context)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _context = context;
+
         try
         {
             _context.Database.EnsureCreated();
@@ -55,25 +57,35 @@ public class PhoneGalleryService
 
             if (userSelection.Name == "Exit")
                 break;
-
         }
     }
 
     public void AddContact()
     {
-        string? name = ContactInput.GetNameInput();
-        if (name == null)
+        var categories = GetCategories();
+        if (!categories.Any())
+        {
+            AnsiConsole.MarkupLine("[red]No categories available... Please add categories first![/]");
+            AnsiConsole.WriteLine("Press any key to continue...");
+            Console.ReadKey();
             return;
+        }
+
+        string? name = ContactInput.GetNameInput();
+        if (name == null) return;
 
         string? email = ContactInput.GetEmailInput();
-        if (email == null)
-            return;
+        if (email == null) return;
 
         string? phoneNumber = ContactInput.GetPhoneNumberInput();
-        if (phoneNumber == null)
-            return;
+        if (phoneNumber == null) return;
 
-        int categoryId = ContactInput.GetCategorySelection(GetCategories());
+        int categoryId = ContactInput.GetCategorySelection(categories);
+        if (!categories.Any(c => c.Id == categoryId))
+        {
+            AnsiConsole.MarkupLine("[red]Invalid category selected.[/]");
+            return;
+        }
 
         var contact = new Contact
         {
@@ -88,17 +100,15 @@ public class PhoneGalleryService
             _context.Contacts.Add(contact);
             _context.SaveChanges();
             AnsiConsole.MarkupLine("[green]Contact was saved successfully.[/]");
-            AnsiConsole.WriteLine("Press any key to continue...");
-            Console.ReadKey();
         }
         catch (Exception ex)
         {
             AnsiConsole.MarkupLine($"[red]Failed to save the contact: {ex.Message}[/]");
-            AnsiConsole.WriteLine("Press any key to continue...");
-            Console.ReadKey();
-            throw;
         }
+        AnsiConsole.WriteLine("Press any key to continue...");
+        Console.ReadKey();
     }
+
 
     public void AddCategory()
     {
@@ -113,7 +123,6 @@ public class PhoneGalleryService
                           return ValidationResult.Error("[red]Category name must be less than 100 characters[/]");
                       return ValidationResult.Success();
                   }));
-
         try
         {
             var category = new Category { Name = name };
@@ -123,21 +132,21 @@ public class PhoneGalleryService
         }
         catch (Exception ex)
         {
-            AnsiConsole.MarkupLine($"[red]Failed to save category: {ex.Message}[/]");
+            AnsiConsole.MarkupLine($"[red]Failed to save new category: {ex.Message}[/]");
         }
 
         AnsiConsole.WriteLine("Press any key to continue...");
         Console.ReadKey();
     }
 
-
-    _context.Categories.Add(
-
-  public List<Contact>? GetContacts()
+    public List<Contact>? GetContacts()
     {
         try
         {
-            var contacts = _context.Contacts.ToList();
+            var contacts = _context.Contacts
+                .Include(c => c.Category)
+                .ToList();
+
             if (!contacts.Any())
             {
                 AnsiConsole.MarkupLine("[yellow]No saved contacts found.[/]");
@@ -152,7 +161,7 @@ public class PhoneGalleryService
             AnsiConsole.MarkupLine($"[red]Database error: {ex.Message}[/]");
             AnsiConsole.WriteLine("Press any key to continue...");
             Console.ReadKey();
-            return new List<Contact>();
+            throw;
         }
 
     }
@@ -164,82 +173,130 @@ public class PhoneGalleryService
 
     public void ShowContacts()
     {
-        var contacts = _context.Contacts.ToList();
+        var contacts = _context.Contacts
+            .Include(c => c.Category)
+            .ToList();
+
         if (!contacts.Any())
         {
-            AnsiConsole.MarkupLine("[yellow]No contacts found in the database.[/]");
+            AnsiConsole.MarkupLine("[yellow]No saved contacts found.[/]");
             AnsiConsole.WriteLine("Press any key to continue...");
             Console.ReadKey();
             return;
         }
 
+        var table = new Table()
+            .AddColumn("[blue]Name[/]")
+            .AddColumn("[blue]Phone Number[/]")
+            .AddColumn("[blue]Email[/]")
+            .AddColumn("[blue]Category[/]");
+
         foreach (var contact in contacts)
         {
-            AnsiConsole.MarkupLine($"[green]Name[/] - {contact.Name}");
-            AnsiConsole.MarkupLine($"[green]Phone Number[/] - {contact.PhoneNumber}");
-            AnsiConsole.MarkupLine($"[green]Email[/] - {contact.Email}");
-            AnsiConsole.MarkupLine($"[green]Category[/] - {contact.Category?.Name ?? "Uncategorized"}");
+            table.AddRow(
+                contact.Name,
+                contact.PhoneNumber,
+                contact.Email,
+                contact.Category?.Name ?? "N/A"
+                );
         }
 
-        AnsiConsole.WriteLine("Press any key to continue...");
+        AnsiConsole.Write(table);
+        AnsiConsole.WriteLine("\nPress any key to continue...");
         Console.ReadKey();
     }
 
     public void ShowCategories()
     {
         var categories = GetCategories();
-        if (categories == null) return;
+        if (!categories.Any())
+        {
+            AnsiConsole.MarkupLine("[yellow]No categories found.[/]");
+            AnsiConsole.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+            return;
+        }
+
+        var table = new Table()
+            .AddColumn("[blue]ID[/]")
+            .AddColumn("[blue]Name[/]");
 
         foreach (var category in categories)
         {
-            Console.WriteLine($"{category.Id}: {category.Name}");
-            Console.WriteLine();
+            table.AddRow(category.Id.ToString(), category.Name);
         }
 
+        AnsiConsole.Write(table);
+        AnsiConsole.WriteLine("\nPress any key to continue...");
+        Console.ReadKey();
     }
 
     public void UpdateContact()
     {
-        Contact contact = ContactInput.GetSpecificContact(GetContacts());
-        if (contact == null)
-            return;
-
-        contact.PhoneNumber = ContactInput.GetPhoneNumberInput();
-        if (contact.PhoneNumber == null)
-            return;
-
-        contact.Email = ContactInput.GetEmailInput();
-        if (contact.Email == null)
-            return;
-
-        contact.CategoryId = ContactInput.GetCategorySelection(GetCategories());
-
-        if (!ContactInput.ConfirmAction())
+        try
         {
-            Console.WriteLine("Changes were cancelled.");
-            return;
-        }
+            Contact contact = ContactInput.GetSpecificContact(GetContacts());
+            if (contact == null)
+                return;
 
-        _context.SaveChanges();
-        Console.WriteLine("Contact was updated.");
+            contact.PhoneNumber = ContactInput.GetPhoneNumberInput();
+            if (contact.PhoneNumber == null)
+                return;
+
+            contact.Email = ContactInput.GetEmailInput();
+            if (contact.Email == null)
+                return;
+
+            contact.CategoryId = ContactInput.GetCategorySelection(GetCategories());
+
+            if (!ContactInput.ConfirmAction())
+            {
+                AnsiConsole.MarkupLine("[yellow]Changes were cancelled.[/]");
+                return;
+            }
+
+            _context.SaveChanges();
+            AnsiConsole.MarkupLine("[green]Contact was successfully updated.[/]");
+        }
+        catch (Exception ex)
+        {
+            AnsiConsole.MarkupLine($"[red]Failed to update contact: {ex.Message}[/]");
+        }
+        finally
+        {
+            AnsiConsole.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+        }
     }
 
     public void DeleteContact()
     {
-        Contact contact = ContactInput.GetSpecificContact(GetContacts());
-        if (contact == null)
-            return;
-
-        if (!ContactInput.ConfirmAction())
+        try
         {
-            Console.WriteLine("Contact was not deleted.");
-            return;
-        }
-        _context.Remove(contact);
-        _context.SaveChanges();
-        Console.WriteLine("Contact was deleted.");
-    }
 
+            Contact contact = ContactInput.GetSpecificContact(GetContacts());
+            if (contact == null)
+                return;
+
+            if (!ContactInput.ConfirmAction())
+            {
+                AnsiConsole.MarkupLine("[yellow]Contact deletion was cancelled.[/]");
+                return;
+            }
+            _context.Remove(contact);
+            _context.SaveChanges();
+            AnsiConsole.MarkupLine("Contact was deleted.");
+        }
+        catch (Exception ex)
+        {
+            AnsiConsole.MarkupLine($"[red]Failed to delete contact: {ex.Message}[/]");
+        }
+        finally
+        {
+            AnsiConsole.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+        }
+    }
 
     public void Exit()
     {
