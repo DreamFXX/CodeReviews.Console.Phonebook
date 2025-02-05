@@ -6,7 +6,7 @@
 
 1. Before running this app, open the appsettings.json file in the root directory of the project.
  In case you dont know your connection string, use "localhost" as your server name and "PhoneGallery_Data" as your database name. App was created on .NET **9.0**
-2. Save the appsettings.json file and run the app.
+3. Save the appsettings.json file and run the app.
 
 ### Main functions of this app and their implementation
 
@@ -20,13 +20,13 @@
 
 ### Main Steps that are yet to be implemented
 
-  1. Add Category model to existing classes, connect Contacts to Categories   with a Foreign Key ✓
+  1. Add Category model to existing classes, connect Contacts to Categories with a Foreign Key ✓
   2. Start implementing database CRUD operations for Contacts and Categories through Service class ✓
   3. Create user interface ✓
   4. Create validation for Phone numbers and Emails ✓
   5. Handle Exceptions and possible Bugs ✓
   6. Handle possible null values ✓
-  7. Windthrough and implement a few try-catch blocks to add to applications stability ✓
+   7. Windthrough and implement a few try-catch blocks to add to applications stability ✓
 
 #### Additional things i experienced while developing this *simple* app
 
