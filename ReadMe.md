@@ -1,4 +1,4 @@
-﻿# Phonebook Practice App
+# Phonebook Practice App
 
 ## Console Program to practice Entity Framework Core
 
