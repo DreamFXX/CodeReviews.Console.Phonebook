@@ -1,12 +1,13 @@
-﻿# Phonebook App by DreamFXX
+﻿# Phonebook Practice App
 
-## Phonebook Console App
+## Console Program to practice Entity Framework Core
 
 ### Important! - Start Configuration
 
 1. Before running this app, open the appsettings.json file in the root directory of the project.
- In case you dont know your connection string, use "localhost" as your server name and "PhoneGallery_Data" as your database name. App was created on .NET **9.0**
-3. Save the appsettings.json file and run the app.
+In case you dont know your connection string, use "localhost" as your server name and "PhoneGallery_Data" as your database name. App was created on .NET **9.0**
+
+2. Save the appsettings.json file and run the app.
 
 ### Main functions of this app and their implementation
 
@@ -26,7 +27,7 @@
   4. Create validation for Phone numbers and Emails ✓
   5. Handle Exceptions and possible Bugs ✓
   6. Handle possible null values ✓
-   7. Windthrough and implement a few try-catch blocks to add to applications stability ✓
+  7. Windthrough and implement a few try-catch blocks to add to applications stability ✓
 
 #### Additional things i experienced while developing this *simple* app
 
