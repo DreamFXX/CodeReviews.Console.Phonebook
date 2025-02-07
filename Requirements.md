@@ -30,4 +30,4 @@ You should use SQL Server, not SQLite
 
 ### Create user defined Categories of Contacts
 
-You should create a Categories class with {Id INT, Name STRING} and use it for the Contacts structure. Contact should have a navigation property to Categories.
+You should create a Categories class with {Id INT, Name STRING} and use it for the Contacts structure. Contact should have a navigation property to Categories
