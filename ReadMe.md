@@ -4,9 +4,12 @@
 
 ### Important! - Start Configuration
 
-1. Before running this app, open the appsettings.json file in the root directory of the project.
-In case you dont know your connection string, use "localhost" as your server name and "PhoneGallery_Data" as your database name. App was created on .NET **9.0**
-
+1. Before running this app, open the appsettings.json file
+  - (Located in the root directory of the project)
+**tips**:
+In case you dont know your connection string
+-  Use "localhost" as your server name
+-  "PhoneGallery" as the database name.
 2. Save the appsettings.json file and run the app.
 
 ### Main functions of this app and their implementation
@@ -15,8 +18,7 @@ In case you dont know your connection string, use "localhost" as your server nam
   2. Create filebase and structure for this project
   3. Create Models in Models directory
   4. Create DbContext for this application
-     - I found out that Entity Framework Core in console apps is different compared to webapps
-     - I was searching, digging and finally found how to create DbContextFactory!
+  -  I found out that Entity Framework Core in console apps is different compared to webapps
   5. Build working configuration file and services to provide access to database.
 
 ### Main Steps that are yet to be implemented
@@ -31,7 +33,7 @@ In case you dont know your connection string, use "localhost" as your server nam
   8. Handle possible null values ✓
   9. Windthrough and implement a few try-catch blocks to add stability ✓
 
-#### Additional things i experienced while developing this *simple* app
+#### Additional things i experienced
 
 <p>This was my first experience with Entity Framework Core and SQL Server together. I was frustrated, i didnt know how to fix all the bugs when I was trying to create the migration.. I was asking myself "What am I doing wrong?" I got a solution, and learned a lot. I appreciate all the work you do with the projects and reviews!</p>
 
