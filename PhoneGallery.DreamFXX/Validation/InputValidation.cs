@@ -8,13 +8,11 @@ public class InputValidation
     {
         if (string.IsNullOrEmpty(name))
             return false;
-
         if (name.Length < 2 || name.Length > 100)
         {
             Console.WriteLine("The name is not in the correct format. Name can contain from 2 to 100 characters. Please try again.");
             return false;
         }
-
         return true;
     }
 
@@ -24,13 +22,11 @@ public class InputValidation
             return false;
 
         string phoneNumberRegex = @"^\+?([0-9]{1,3})?[-. ]?\(?([0-9]{1,3})\)?[-. ]?([0-9]{3,4})[-. ]?([0-9]{4})$";
-
         if (!Regex.IsMatch(phoneNumber, phoneNumberRegex))
         {
             Console.WriteLine("The phone number is not in the correct format. Please try again.");
             return false;
         }
-
         return true;
     }
 
@@ -40,7 +36,6 @@ public class InputValidation
             return false;
 
         string emailRegex = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-
         if (!Regex.IsMatch(email, emailRegex))
         {
             Console.WriteLine("The email is not in the correct format. Please try again and enter valid email address.");

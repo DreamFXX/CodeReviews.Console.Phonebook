@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
 namespace PhoneGallery.DreamFXX.Models;
 
 public class Category
@@ -9,7 +8,6 @@ public class Category
     [Required(ErrorMessage = "Category name is required")]
     [StringLength(100, ErrorMessage = "Category name cannot exceed 100 characters.")]
     public required string Name { get; set; }
-
     public List<Contact> Contacts { get; set; } = new();
 }
 

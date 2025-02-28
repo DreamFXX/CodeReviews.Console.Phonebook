@@ -6,26 +6,14 @@ using PhoneGallery.DreamFXX.Data;
 using PhoneGallery.DreamFXX.Models;
 using PhoneGallery.DreamFXX.UserInput;
 using Spectre.Console;
-
 namespace PhoneGallery.DreamFXX.Services;
 
 public class PhoneGalleryService
 {
     private readonly PhoneGalleryContext _context;
-
     public PhoneGalleryService(PhoneGalleryContext context)
     {
         _context = context;
-
-        try
-        {
-            _context.Database.EnsureCreated();
-        }
-        catch (Exception dbEx)
-        {
-            AnsiConsole.MarkupLine($"[red]Database initialization error: {dbEx.Message}[/]");
-            throw;
-        }
     }
 
     public void Start()
@@ -94,7 +82,6 @@ public class PhoneGalleryService
             PhoneNumber = phoneNumber,
             CategoryId = categoryId
         };
-
         try
         {
             _context.Contacts.Add(contact);
@@ -108,7 +95,6 @@ public class PhoneGalleryService
         AnsiConsole.WriteLine("Press any key to continue...");
         Console.ReadKey();
     }
-
 
     public void AddCategory()
     {
@@ -163,7 +149,6 @@ public class PhoneGalleryService
             Console.ReadKey();
             throw;
         }
-
     }
 
     private List<Category> GetCategories()
@@ -176,7 +161,6 @@ public class PhoneGalleryService
         var contacts = _context.Contacts
             .Include(c => c.Category)
             .ToList();
-
         if (!contacts.Any())
         {
             AnsiConsole.MarkupLine("[yellow]No saved contacts found.[/]");
@@ -190,7 +174,6 @@ public class PhoneGalleryService
             .AddColumn("[blue]Phone Number[/]")
             .AddColumn("[blue]Email[/]")
             .AddColumn("[blue]Category[/]");
-
         foreach (var contact in contacts)
         {
             table.AddRow(
@@ -220,7 +203,6 @@ public class PhoneGalleryService
         var table = new Table()
             .AddColumn("[blue]ID[/]")
             .AddColumn("[blue]Name[/]");
-
         foreach (var category in categories)
         {
             table.AddRow(category.Id.ToString(), category.Name);
@@ -248,13 +230,11 @@ public class PhoneGalleryService
                 return;
 
             contact.CategoryId = ContactInput.GetCategorySelection(GetCategories());
-
             if (!ContactInput.ConfirmAction())
             {
                 AnsiConsole.MarkupLine("[yellow]Changes were cancelled.[/]");
                 return;
             }
-
             _context.SaveChanges();
             AnsiConsole.MarkupLine("[green]Contact was successfully updated.[/]");
         }
@@ -273,7 +253,6 @@ public class PhoneGalleryService
     {
         try
         {
-
             Contact contact = ContactInput.GetSpecificContact(GetContacts());
             if (contact == null)
                 return;
@@ -304,7 +283,6 @@ public class PhoneGalleryService
         Console.ReadKey();
         Environment.Exit(0);
     }
-
 }
 
 
