@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,7 +13,8 @@ var builder = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
         services.AddDbContext<PhoneGalleryContext>(options =>
-            options.UseSqlServer(hostContext.Configuration.GetConnectionString("DefaultConnectionString")));
+            options.UseSqlServer(hostContext.Configuration.GetConnectionString("DefaultConnectionString"))
+            .ConfigureWarnings(w => w.Ignore(RelationalEventId.CommandExecuted)));
         services.AddScoped<PhoneGalleryService>();
     });
 
